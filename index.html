@@ -8,335 +8,111 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+/* إخفاء جميع أشرطة التمرير نهائياً دون التأثير على الواجهة */
+*::-webkit-scrollbar{width:0px !important;height:0px !important;display:none !important}
+*{-ms-overflow-style:none !important;scrollbar-width:none !important}
+
 html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%}
 body{font-family:'Montserrat',Arial,sans-serif}
-/* ===== Advanced Notification System ===== */
-.qx-notifications{
-position:fixed;
-top:16px;
-right:16px;
-left:16px;
-z-index:99999;
-display:flex;
-flex-direction:column;
-gap:10px;
-pointer-events:none;
-max-width:420px;
-margin:0 auto;
-}
-@media(min-width:601px){
-.qx-notifications{
-left:auto;
-right:20px;
-margin:0;
-}
-}
-.qx-toast{
-pointer-events:all;
-position:relative;
-display:flex;
-align-items:flex-start;
-gap:12px;
-padding:14px 16px;
-background:rgba(11,15,24,.96);
-backdrop-filter:blur(20px) saturate(180%);
--webkit-backdrop-filter:blur(20px) saturate(180%);
-border:1px solid rgba(255,255,255,.08);
-border-radius:14px;
-box-shadow:
-0 20px 50px rgba(0,0,0,.5),
-0 0 0 1px rgba(0,0,0,.3),
-inset 0 1px 0 rgba(255,255,255,.05);
-overflow:hidden;
-transform:translateY(-30px) scale(.95);
-opacity:0;
-animation:qxToastIn .5s cubic-bezier(.16,1,.3,1) forwards;
-font-family:'Montserrat',sans-serif;
-}
-.qx-toast.qx-leaving{
-animation:qxToastOut .4s cubic-bezier(.7,0,.85,.15) forwards;
-}
-@keyframes qxToastIn{
-0%{transform:translateY(-30px) scale(.92);opacity:0;filter:blur(6px)}
-100%{transform:translateY(0) scale(1);opacity:1;filter:blur(0)}
-}
-@keyframes qxToastOut{
-0%{transform:translateX(0) scale(1);opacity:1}
-100%{transform:translateX(120%) scale(.9);opacity:0}
-}
-.qx-toast::before{
-content:'';
-position:absolute;
-left:0;top:0;bottom:0;
-width:3px;
-background:var(--qx-accent,#00d2ff);
-box-shadow:0 0 12px var(--qx-accent,#00d2ff);
-}
-.qx-toast-icon{
-width:36px;height:36px;
-border-radius:10px;
-display:flex;align-items:center;justify-content:center;
-flex-shrink:0;
-background:var(--qx-icon-bg,rgba(0,210,255,.12));
-color:var(--qx-accent,#00d2ff);
-border:1px solid var(--qx-icon-border,rgba(0,210,255,.25));
-position:relative;
-}
-.qx-toast-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.qx-toast-icon::after{
-content:'';
-position:absolute;inset:-4px;
-border-radius:14px;
-background:var(--qx-accent,#00d2ff);
-opacity:.15;
-filter:blur(8px);
-z-index:-1;
-}
-.qx-toast-body{flex:1;min-width:0;padding-top:2px}
-.qx-toast-title{
-font-size:13px;font-weight:700;color:#fff;
-margin-bottom:3px;
-display:flex;align-items:center;gap:6px;
-}
-.qx-toast-msg{
-font-size:11.5px;color:rgba(255,255,255,.7);
-line-height:1.55;
-word-break:break-word;
-}
-.qx-toast-msg strong{color:var(--qx-accent,#00d2ff);font-weight:700}
-.qx-toast-close{
-background:transparent;border:none;
-color:rgba(255,255,255,.4);
-cursor:pointer;
-width:24px;height:24px;
-border-radius:6px;
-display:flex;align-items:center;justify-content:center;
-transition:all .2s;
-flex-shrink:0;
-margin-top:-2px;margin-right:-4px;
-}
-.qx-toast-close:hover{background:rgba(255,255,255,.08);color:#fff}
-.qx-toast-close svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.qx-toast-progress{
-position:absolute;
-left:0;right:0;bottom:0;
-height:2px;
-background:rgba(255,255,255,.05);
-overflow:hidden;
-}
-.qx-toast-progress-bar{
-height:100%;
-background:var(--qx-accent,#00d2ff);
-width:100%;
-transform-origin:left;
-animation:qxProgress linear forwards;
-box-shadow:0 0 8px var(--qx-accent,#00d2ff);
-}
-@keyframes qxProgress{
-from{transform:scaleX(1)}
-to{transform:scaleX(0)}
-}
-/* Toast type variants */
-.qx-toast.success{--qx-accent:#28c840;--qx-icon-bg:rgba(40,200,64,.12);--qx-icon-border:rgba(40,200,64,.3)}
-.qx-toast.error{--qx-accent:#ff4d6d;--qx-icon-bg:rgba(255,77,109,.12);--qx-icon-border:rgba(255,77,109,.3)}
-.qx-toast.warning{--qx-accent:#f0a500;--qx-icon-bg:rgba(240,165,0,.12);--qx-icon-border:rgba(240,165,0,.3)}
-.qx-toast.info{--qx-accent:#00d2ff;--qx-icon-bg:rgba(0,210,255,.12);--qx-icon-border:rgba(0,210,255,.3)}
-.qx-toast.shake{animation:qxShake .5s ease}
-@keyframes qxShake{
-0%,100%{transform:translateX(0)}
-20%{transform:translateX(-6px)}
-40%{transform:translateX(6px)}
-60%{transform:translateX(-4px)}
-80%{transform:translateX(4px)}
-}
-/* Pulse ring on icon for important toasts */
-.qx-toast.pulse .qx-toast-icon::before{
-content:'';
-position:absolute;inset:0;
-border-radius:10px;
-border:2px solid var(--qx-accent,#00d2ff);
-animation:qxPulseRing 2s ease-out infinite;
-}
-@keyframes qxPulseRing{
-0%{transform:scale(1);opacity:.8}
-100%{transform:scale(1.6);opacity:0}
-}
-
-/* ===== Center Alert Card (for Insufficient Points etc.) ===== */
-.qx-alert-overlay{
-position:fixed;
-top:0;left:0;right:0;bottom:0;
-background:rgba(0,0,0,.65);
-backdrop-filter:blur(6px);
--webkit-backdrop-filter:blur(6px);
-z-index:99998;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:20px;
-opacity:0;
-pointer-events:none;
-transition:opacity .3s ease;
-}
-.qx-alert-overlay.visible{
-opacity:1;
-pointer-events:all;
-}
-.qx-alert-card{
-width:100%;
-max-width:360px;
-background:rgba(11,15,24,.98);
-backdrop-filter:blur(24px) saturate(180%);
--webkit-backdrop-filter:blur(24px) saturate(180%);
-border:1px solid rgba(255,255,255,.08);
-border-radius:20px;
-padding:28px 24px 22px;
-text-align:center;
-position:relative;
-overflow:hidden;
-box-shadow:
-0 30px 80px rgba(0,0,0,.6),
-0 0 0 1px rgba(0,0,0,.3),
-inset 0 1px 0 rgba(255,255,255,.05);
-transform:scale(.85) translateY(20px);
-opacity:0;
-transition:all .45s cubic-bezier(.16,1,.3,1);
-}
-.qx-alert-overlay.visible .qx-alert-card{
-transform:scale(1) translateY(0);
-opacity:1;
-}
-.qx-alert-card::before{
-content:'';
-position:absolute;
-top:-60px;left:50%;
-transform:translateX(-50%);
-width:220px;height:220px;
-background:radial-gradient(circle,var(--qx-alert-glow,rgba(255,77,109,.25)),transparent 65%);
-pointer-events:none;
-}
+/* ===== Notifications Page ===== */
+.notif-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:7000;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.notif-overlay.visible{opacity:1;pointer-events:all}
+.notif-sheet{position:fixed;top:0;right:0;bottom:0;width:100%;max-width:420px;background:rgba(8,11,18,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-left:1px solid rgba(0,210,255,.12);z-index:7001;transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+.notif-sheet.visible{transform:translateX(0)}
+.notif-header{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;flex-shrink:0;background:rgba(5,7,11,.95)}
+.notif-header-icon{width:38px;height:38px;border-radius:10px;background:rgba(0,210,255,.1);border:1px solid rgba(0,210,255,.25);display:flex;align-items:center;justify-content:center;color:#00d2ff;flex-shrink:0}
+.notif-header-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.notif-header-info{flex:1;min-width:0}
+.notif-header-title{font-size:15px;font-weight:800;color:#fff;margin-bottom:2px}
+.notif-header-count{font-size:10px;color:rgba(255,255,255,.5)}
+.notif-header-count strong{color:#00d2ff;font-weight:700}
+.notif-close-btn{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;flex-shrink:0}
+.notif-close-btn:active{background:rgba(255,255,255,.1);transform:scale(.93)}
+.notif-close-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.notif-actions-bar{padding:10px 18px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:8px;flex-shrink:0}
+.notif-action-btn{padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.6);font-family:'Montserrat';font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.notif-action-btn:active{background:rgba(255,255,255,.08)}
+.notif-action-btn svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.notif-list{flex:1;overflow-y:auto;padding:10px 14px;scrollbar-width:none}
+.notif-list::-webkit-scrollbar{display:none}
+.notif-item{display:flex;gap:10px;padding:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:10px;margin-bottom:8px;transition:all .25s;position:relative;animation:notifSlideIn .4s ease}
+@keyframes notifSlideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.notif-item.unread{background:rgba(0,210,255,.04);border-color:rgba(0,210,255,.15)}
+.notif-item.unread::before{content:'';position:absolute;top:14px;right:12px;width:6px;height:6px;border-radius:50%;background:#00d2ff}
+.notif-item:active{background:rgba(255,255,255,.04)}
+.notif-item-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid}
+.notif-item-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.notif-item.success .notif-item-icon{background:rgba(40,200,64,.1);border-color:rgba(40,200,64,.25);color:#28c840}
+.notif-item.error .notif-item-icon{background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.25);color:#ff4d6d}
+.notif-item.warning .notif-item-icon{background:rgba(240,165,0,.1);border-color:rgba(240,165,0,.25);color:#f0a500}
+.notif-item.info .notif-item-icon{background:rgba(0,210,255,.1);border-color:rgba(0,210,255,.25);color:#00d2ff}
+.notif-item-body{flex:1;min-width:0;padding-right:10px}
+.notif-item-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.3}
+.notif-item-msg{font-size:10.5px;color:rgba(255,255,255,.6);line-height:1.5;word-break:break-word}
+.notif-item-msg strong{color:#00d2ff;font-weight:700}
+.notif-item-time{font-size:9px;color:rgba(255,255,255,.35);margin-top:5px;font-family:'JetBrains Mono',monospace}
+.notif-empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.4)}
+.notif-empty-icon{width:70px;height:70px;border-radius:50%;background:rgba(0,210,255,.05);border:1px solid rgba(0,210,255,.15);display:flex;align-items:center;justify-content:center;color:rgba(0,210,255,.4);margin:0 auto 14px}
+.notif-empty-icon svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.6}
+.notif-empty h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px}
+.notif-empty p{font-size:11px;color:rgba(255,255,255,.45);line-height:1.5}
+/* ===== Alert Card (center) ===== */
+.qx-alert-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:99998;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.qx-alert-overlay.visible{opacity:1;pointer-events:all}
+.qx-alert-card{width:100%;max-width:360px;background:rgba(11,15,24,.98);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px 24px 22px;text-align:center;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.05);transform:scale(.85) translateY(20px);opacity:0;transition:all .45s cubic-bezier(.16,1,.3,1)}
+.qx-alert-overlay.visible .qx-alert-card{transform:scale(1) translateY(0);opacity:1}
+.qx-alert-card::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:220px;height:220px;background:radial-gradient(circle,var(--qx-alert-glow,rgba(255,77,109,.25)),transparent 65%);pointer-events:none}
 .qx-alert-card.warning{--qx-alert-accent:#f0a500;--qx-alert-glow:rgba(240,165,0,.28);--qx-alert-border:rgba(240,165,0,.35);--qx-alert-bg:rgba(240,165,0,.12)}
 .qx-alert-card.error{--qx-alert-accent:#ff4d6d;--qx-alert-glow:rgba(255,77,109,.28);--qx-alert-border:rgba(255,77,109,.35);--qx-alert-bg:rgba(255,77,109,.12)}
 .qx-alert-card.success{--qx-alert-accent:#28c840;--qx-alert-glow:rgba(40,200,64,.28);--qx-alert-border:rgba(40,200,64,.35);--qx-alert-bg:rgba(40,200,64,.12)}
 .qx-alert-card.info{--qx-alert-accent:#00d2ff;--qx-alert-glow:rgba(0,210,255,.28);--qx-alert-border:rgba(0,210,255,.35);--qx-alert-bg:rgba(0,210,255,.12)}
-.qx-alert-card{
-border-color:var(--qx-alert-border,rgba(255,255,255,.08));
-}
-.qx-alert-icon{
-width:72px;height:72px;
-border-radius:50%;
-background:var(--qx-alert-bg,rgba(255,77,109,.12));
-border:2px solid var(--qx-alert-border,rgba(255,77,109,.35));
-display:flex;
-align-items:center;
-justify-content:center;
-margin:0 auto 16px;
-color:var(--qx-alert-accent,#ff4d6d);
-position:relative;
-box-shadow:0 0 40px var(--qx-alert-glow,rgba(255,77,109,.25));
-animation:alertIconPulse 2.5s ease-in-out infinite;
-}
-@keyframes alertIconPulse{
-0%,100%{box-shadow:0 0 40px var(--qx-alert-glow,rgba(255,77,109,.25))}
-50%{box-shadow:0 0 60px var(--qx-alert-glow,rgba(255,77,109,.4))}
-}
-.qx-alert-icon svg{
-width:34px;height:34px;
-fill:none;
-stroke:currentColor;
-stroke-width:2;
-stroke-linecap:round;
-stroke-linejoin:round;
-position:relative;
-z-index:1;
-}
-.qx-alert-title{
-font-size:18px;
-font-weight:800;
-color:#fff;
-margin-bottom:8px;
-letter-spacing:-.3px;
-}
-.qx-alert-message{
-font-size:13px;
-color:rgba(255,255,255,.7);
-line-height:1.65;
-margin-bottom:20px;
-padding:0 4px;
-}
-.qx-alert-message strong{
-color:var(--qx-alert-accent,#ff4d6d);
-font-weight:700;
-}
-.qx-alert-stats{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-bottom:20px;
-}
-.qx-alert-stat{
-flex:1;
-background:rgba(0,0,0,.3);
-border:1px solid rgba(255,255,255,.06);
-border-radius:10px;
-padding:10px 8px;
-}
-.qx-alert-stat-value{
-font-family:'Montserrat';
-font-size:16px;
-font-weight:800;
-color:var(--qx-alert-accent,#ff4d6d);
-line-height:1;
-margin-bottom:3px;
-}
-.qx-alert-stat-label{
-font-size:9px;
-color:rgba(255,255,255,.5);
-font-weight:600;
-text-transform:uppercase;
-letter-spacing:.5px;
-}
-.qx-alert-actions{
-display:flex;
-flex-direction:column;
-gap:8px;
-}
-.qx-alert-btn{
-width:100%;
-padding:12px 16px;
-border-radius:10px;
-font-family:'Montserrat';
-font-size:13px;
-font-weight:700;
-cursor:pointer;
-transition:all .25s;
-border:none;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:8px;
-}
-.qx-alert-btn.primary{
-background:linear-gradient(135deg,var(--qx-alert-accent,#00d2ff),color-mix(in srgb,var(--qx-alert-accent,#00d2ff) 70%,#000));
-color:#000;
-box-shadow:0 8px 20px var(--qx-alert-glow,rgba(0,210,255,.25));
-}
+.qx-alert-card{border-color:var(--qx-alert-border,rgba(255,255,255,.08))}
+.qx-alert-icon{width:72px;height:72px;border-radius:50%;background:var(--qx-alert-bg,rgba(255,77,109,.12));border:2px solid var(--qx-alert-border,rgba(255,77,109,.35));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--qx-alert-accent,#ff4d6d);position:relative}
+.qx-alert-icon svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1}
+.qx-alert-title{font-size:18px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.3px}
+.qx-alert-message{font-size:13px;color:rgba(255,255,255,.7);line-height:1.65;margin-bottom:20px;padding:0 4px}
+.qx-alert-message strong{color:var(--qx-alert-accent,#ff4d6d);font-weight:700}
+.qx-alert-stats{display:flex;justify-content:center;gap:10px;margin-bottom:20px}
+.qx-alert-stat{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 8px}
+.qx-alert-stat-value{font-family:'Montserrat';font-size:16px;font-weight:800;color:var(--qx-alert-accent,#ff4d6d);line-height:1;margin-bottom:3px}
+.qx-alert-stat-label{font-size:9px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.qx-alert-actions{display:flex;flex-direction:column;gap:8px}
+.qx-alert-btn{width:100%;padding:12px 16px;border-radius:10px;font-family:'Montserrat';font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;border:none;display:flex;align-items:center;justify-content:center;gap:8px}
+.qx-alert-btn.primary{background:linear-gradient(135deg,var(--qx-alert-accent,#00d2ff),color-mix(in srgb,var(--qx-alert-accent,#00d2ff) 70%,#000));color:#000;box-shadow:0 8px 20px var(--qx-alert-glow,rgba(0,210,255,.25))}
 .qx-alert-btn.primary:active{transform:scale(.97)}
-.qx-alert-btn.secondary{
-background:rgba(255,255,255,.05);
-color:rgba(255,255,255,.7);
-border:1px solid rgba(255,255,255,.08);
-}
+.qx-alert-btn.secondary{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.08)}
 .qx-alert-btn.secondary:active{background:rgba(255,255,255,.08)}
-.qx-alert-btn svg{
-width:15px;height:15px;
-fill:none;
-stroke:currentColor;
-stroke-width:2;
-stroke-linecap:round;
-stroke-linejoin:round;
-}
-
+.qx-alert-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* ===== Transaction Success Page (Deposit & Withdraw) ===== */
+.tx-success-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:99997;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.tx-success-overlay.visible{opacity:1;pointer-events:all}
+.tx-success-card{width:100%;max-width:380px;background:rgba(12,16,24,.98);border:1px solid rgba(40,200,64,.2);border-radius:24px;padding:36px 28px 30px;text-align:center;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.3);transform:scale(.85);opacity:0;transition:all .5s cubic-bezier(.16,1,.3,1)}
+.tx-success-overlay.visible .tx-success-card{transform:scale(1);opacity:1}
+.tx-success-card::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:260px;height:260px;background:radial-gradient(circle,rgba(40,200,64,.2),transparent 65%);pointer-events:none}
+.ts-check-wrap{width:100px;height:100px;margin:0 auto 20px;position:relative;cursor:pointer}
+.ts-check-circle{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,rgba(40,200,64,.15),rgba(40,200,64,.05));border:2px solid rgba(40,200,64,.4);display:flex;align-items:center;justify-content:center;color:#28c840;position:relative;z-index:1}
+.ts-check-circle svg{width:48px;height:48px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ts-check-circle svg path{stroke-dasharray:60;stroke-dashoffset:60;animation:tsCheckDraw .8s .3s ease forwards}
+@keyframes tsCheckDraw{to{stroke-dashoffset:0}}
+.ts-check-ring{position:absolute;top:-10px;left:-10px;right:-10px;bottom:-10px;border-radius:50%;border:2px solid rgba(40,200,64,.3);opacity:.5}
+.ts-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.3px}
+.ts-message{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.65;margin-bottom:22px;padding:0 4px}
+.ts-message strong{color:#28c840;font-weight:700}
+.ts-details{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px;margin-bottom:20px}
+.ts-detail-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:11px}
+.ts-detail-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04)}
+.ts-detail-row .ts-label{color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px}
+.ts-detail-row .ts-label svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
+.ts-detail-row .ts-value{color:#fff;font-weight:700;font-family:'JetBrains Mono',monospace}
+.ts-detail-row .ts-value.amount{color:#28c840;font-size:13px}
+.ts-time-note{display:flex;align-items:center;gap:10px;background:rgba(240,165,0,.05);border:1px solid rgba(240,165,0,.2);border-radius:12px;padding:12px;margin-bottom:18px}
+.ts-time-icon{width:36px;height:36px;border-radius:10px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.25);display:flex;align-items:center;justify-content:center;color:#f0a500;flex-shrink:0}
+.ts-time-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.ts-time-text{flex:1;text-align:left;font-size:10.5px;color:rgba(255,255,255,.6);line-height:1.5}
+.ts-time-text strong{color:#f0a500;font-weight:700}
+.ts-btn{width:100%;padding:13px;border-radius:12px;font-family:'Montserrat';font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;border:none;background:linear-gradient(135deg,#00d2ff,#0099cc);color:#000;box-shadow:0 8px 20px rgba(0,210,255,.25);display:flex;align-items:center;justify-content:center;gap:8px}
+.ts-btn:active{transform:scale(.97)}
+.ts-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 #logo-stage{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;z-index:10000;transition:z-index 0s 1.5s, background 1.5s ease;background:#000}
 .logo-container{width:300px;height:300px;position:relative;margin:auto;transition:transform 2.5s cubic-bezier(.25,.1,.25,1),opacity 2.5s ease;transform-origin:center 45%}
 .logo-container svg{width:100%;height:100%;overflow:visible;display:block}
@@ -369,15 +145,7 @@ stroke-linejoin:round;
 .nav-brand-text{font-size:15px;font-weight:700;color:#fff;letter-spacing:.8px}
 .nav-cta{background:rgba(0,210,255,.12);border:1px solid rgba(0,210,255,.3);color:#00d2ff;padding:6px 16px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .25s}
 .nav-cta:hover{background:rgba(0,210,255,.2);border-color:rgba(0,210,255,.5)}
-.hero{
-min-height:100vh;
-display:flex;
-flex-direction:column;
-padding:60px 48px 40px;
-text-align:center;
-position:relative;
-z-index:10;
-}
+.hero{min-height:100vh;display:flex;flex-direction:column;padding:60px 48px 40px;text-align:center;position:relative;z-index:10}
 .hero-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,210,255,.04) 0%,transparent 70%);top:40%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
 .hero-top{display:flex;flex-direction:column;align-items:center;flex:1;justify-content:flex-start;padding-top:10px}
 .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);padding:5px 12px;border-radius:100px;font-size:10px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:14px}
@@ -397,10 +165,7 @@ z-index:10;
 .stat-number-float{font-size:clamp(18px,2.2vw,26px);font-weight:800;color:#fff;line-height:1;margin-bottom:5px}
 .stat-number-float span{color:#00d2ff}
 .stat-label-float{font-size:clamp(8px,.9vw,10px);font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px}
-@media (min-width: 601px) {
-.hero-actions { gap: 22px; }
-.floating-stats { margin-top: 30px !important; }
-}
+@media (min-width: 601px) {.hero-actions { gap: 22px; }.floating-stats { margin-top: 30px !important; }}
 .features-section, .levels-section{padding:80px 32px;max-width:1000px;margin:0 auto}
 .section-header{text-align:center;margin-bottom:48px}
 .section-label{font-size:10px;font-weight:700;color:#00d2ff;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
@@ -411,10 +176,10 @@ z-index:10;
 .features-timeline::before{content:'';position:absolute;right:24px;top:20px;bottom:20px;width:2px;background:linear-gradient(to bottom,#00d2ff,#00f0ff,#28c840);opacity:.25}
 .feature-item{position:relative;margin-bottom:22px;display:flex;align-items:stretch}
 .feature-item:last-child{margin-bottom:0}
-.feature-icon-wrap{position:absolute;right:-60px;top:18px;width:46px;height:46px;background:rgba(5,7,11,.9);border:1px solid rgba(0,210,255,.35);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#00d2ff;backdrop-filter:blur(8px);box-shadow:0 0 20px rgba(0,210,255,.15)}
+.feature-icon-wrap{position:absolute;right:-60px;top:18px;width:46px;height:46px;background:rgba(5,7,11,.9);border:1px solid rgba(0,210,255,.35);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#00d2ff;backdrop-filter:blur(8px)}
 .feature-icon-wrap svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.feat-c-2{color:#f0a500;border-color:rgba(240,165,0,.35);box-shadow:0 0 20px rgba(240,165,0,.15)}
-.feat-c-3{color:#28c840;border-color:rgba(40,200,64,.35);box-shadow:0 0 20px rgba(40,200,64,.15)}
+.feat-c-2{color:#f0a500;border-color:rgba(240,165,0,.35)}
+.feat-c-3{color:#28c840;border-color:rgba(40,200,64,.35)}
 .feature-info{flex:1;background:rgba(11,15,24,.6);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:18px 22px;transition:all .3s}
 .feature-info:hover{border-color:rgba(0,210,255,.15);background:rgba(11,15,24,.8)}
 .feature-info h4{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -461,7 +226,7 @@ z-index:10;
 .footer-col a:hover{color:#00d2ff}
 .footer-social{display:flex;gap:12px;margin-top:16px}
 .footer-social a{width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:#fff;transition:all .3s}
-.footer-social a:hover{background:rgba(0,210,255,0.15);border-color:rgba(0,210,255,0.6);color:#00d2ff;box-shadow:0 0 15px rgba(0,210,255,0.3);transform:translateY(-3px)}
+.footer-social a:hover{background:rgba(0,210,255,0.15);border-color:rgba(0,210,255,0.6);color:#00d2ff;transform:translateY(-3px)}
 .footer-social svg{width:22px;height:22px;fill:currentColor;stroke:none}
 .footer-bottom{text-align:center;padding-top:24px;border-top:1px solid rgba(255,255,255,.05)}
 .footer-bottom p{font-size:11px;color:rgba(255,255,255,.3)}
@@ -488,10 +253,11 @@ z-index:10;
 .user-details h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:1px}
 .user-details p{font-size:10px;color:rgba(0,210,255,.8);font-weight:600}
 .header-right{display:flex;gap:8px}
-.icon-btn-lg{width:34px;height:34px;border-radius:8px;background:rgba(11,15,24,.8);border:1px solid rgba(0,210,255,.15);display:flex;align-items:center;justify-content:center;color:#00d2ff;cursor:pointer;position:relative}
+.icon-btn-lg{width:34px;height:34px;border-radius:8px;background:rgba(11,15,24,.8);border:1px solid rgba(0,210,255,.15);display:flex;align-items:center;justify-content:center;color:#00d2ff;cursor:pointer;position:relative;z-index:201}
 .icon-btn-lg:active{background:rgba(0,210,255,.1)}
-.icon-btn-lg .badge{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#ff4d6d;border-radius:50%;border:2px solid #000}
 .icon-btn-lg svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bell-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:#ff1744;border-radius:10px;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #05070b;font-family:'JetBrains Mono',monospace;letter-spacing:-.3px}
+.bell-badge.hidden{display:none}
 .main-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px;padding-bottom:80px;scrollbar-width:none}
 .main-content::-webkit-scrollbar{display:none}
 .section{display:none;animation:fadeIn .5s ease}
@@ -512,9 +278,8 @@ z-index:10;
 .section-title-app::before{content:'';width:3px;height:16px;background:#00d2ff;border-radius:3px}
 .missions-locked-page{position:relative;text-align:center;padding:40px 20px;min-height:calc(100vh - 200px);display:flex;flex-direction:column;align-items:center;justify-content:center}
 .missions-lock-wrapper{position:relative;margin-bottom:24px}
-.missions-lock-icon{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,rgba(240,165,0,.15),rgba(240,165,0,.05));border:2px solid rgba(240,165,0,.35);display:flex;align-items:center;justify-content:center;color:#f0a500;margin:0 auto;box-shadow:0 0 60px rgba(240,165,0,.2);animation:lockPulse 3s ease-in-out infinite}
+.missions-lock-icon{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,rgba(240,165,0,.15),rgba(240,165,0,.05));border:2px solid rgba(240,165,0,.35);display:flex;align-items:center;justify-content:center;color:#f0a500;margin:0 auto}
 .missions-lock-icon svg{width:54px;height:54px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-@keyframes lockPulse{0%,100%{box-shadow:0 0 60px rgba(240,165,0,.2)}50%{box-shadow:0 0 80px rgba(240,165,0,.35)}}
 .missions-locked-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.5px}
 .missions-locked-sub{font-size:12px;color:rgba(255,255,255,.5);max-width:280px;margin:0 auto 30px;line-height:1.6}
 .missions-blurred-preview{width:100%;max-width:340px;background:rgba(11,15,24,.6);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:16px;filter:blur(8px);pointer-events:none;user-select:none;opacity:.6}
@@ -582,10 +347,8 @@ z-index:10;
 .method-name{font-size:12px;font-weight:700;color:#fff}
 .method-desc{font-size:10px;color:rgba(255,255,255,.4)}
 .method-fee{margin-left:auto;font-size:10px;color:#f0a500;font-weight:600;background:rgba(240,165,0,.1);padding:2px 8px;border-radius:4px}
-.wallet-form-group{margin-bottom:12px;margin-top:14px}
-.wallet-form-label{display:block;font-size:10px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
-.wallet-form-input{width:100%;padding:10px 12px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'Montserrat';font-size:12px;outline:none;transition:all .3s}
-.wallet-form-input:focus{border-color:#00d2ff;box-shadow:0 0 0 3px rgba(0,210,255,.1)}
+.method-arrow{color:rgba(255,255,255,.3);margin-left:6px}
+.method-arrow svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tx-list{display:flex;flex-direction:column;gap:8px}
 .tx-item{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:12px}
 .tx-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -645,26 +408,16 @@ z-index:10;
 .comment-text{font-size:10px;color:rgba(255,255,255,.6);margin-top:3px;line-height:1.5}
 .pricing-mini-card{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;margin-bottom:10px}
 .pricing-mini-card.featured{border-color:rgba(0,210,255,.3);background:rgba(0,210,255,.05);box-shadow:0 4px 20px rgba(0,210,255,.1)}
+.pricing-mini-card.free{border-color:rgba(40,200,64,.3);background:rgba(40,200,64,.05);box-shadow:0 4px 20px rgba(40,200,64,.1)}
 .pricing-mini-card .plan-name{margin-bottom:4px}
 .pricing-mini-card .plan-price{font-size:22px;margin:4px 0}
 .pricing-mini-card .plan-desc{font-size:10px;margin-bottom:10px;min-height:auto}
-.tabs{display:flex;gap:6px;margin-bottom:14px;background:rgba(11,15,24,.9);padding:4px;border-radius:8px;border:1px solid rgba(255,255,255,.04)}
-.tab{flex:1;padding:8px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,.4);font-family:'Montserrat';font-size:12px;font-weight:600;cursor:pointer;transition:all .3s}
-.tab.active{background:rgba(0,210,255,.1);color:#00d2ff;border:1px solid rgba(0,210,255,.2)}
-.form-group{margin-bottom:14px}
-.form-label{display:block;font-size:10px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
-.form-input{width:100%;padding:10px 12px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#fff;font-family:'Montserrat';font-size:12px;outline:none;transition:all .3s}
-.form-input:focus{border-color:#00d2ff;box-shadow:0 0 0 3px rgba(0,210,255,.1)}
-.range-container{display:flex;align-items:center;gap:12px;margin-top:8px}
-.range-slider{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:4px;outline:none;accent-color:#00d2ff}
-.range-value{font-family:'Montserrat';font-weight:800;color:#00d2ff;font-size:16px;min-width:35px;text-align:center}
-.form-hint{font-size:11px;color:rgba(240,165,0,.9);margin-top:8px;padding:8px;background:rgba(240,165,0,.08);border-radius:6px;border:1px solid rgba(240,165,0,.2);line-height:1.4;display:flex;align-items:flex-start;gap:6px}
-.form-hint svg{width:14px;height:14px;flex-shrink:0}
 .btn{padding:10px 16px;border-radius:8px;font-family:'Montserrat';font-size:12px;font-weight:700;cursor:pointer;transition:all .3s;border:none;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
 .btn-primary{background:linear-gradient(135deg,#00d2ff,#0099cc);color:#000;box-shadow:0 4px 12px rgba(0,210,255,.2)}
 .btn-primary:active{transform:scale(0.97)}
 .btn-secondary{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)}
 .btn-secondary:active{background:rgba(255,255,255,.1)}
+.btn-success{background:linear-gradient(135deg,#28c840,#1a9e2d);color:#fff;box-shadow:0 4px 12px rgba(40,200,64,.2)}
 .btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .balance-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
@@ -685,29 +438,8 @@ z-index:10;
 .nav-item.active .nav-label{color:#00d2ff;font-weight:700}
 .nav-icon{width:20px;height:20px;color:#fff;transition:all .3s;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav-label{font-size:9px;font-weight:600;color:rgba(255,255,255,.5)}
-.nav-badge{
-position:absolute;
-top:-4px;
-right:calc(50% - 18px);
-min-width:18px;
-height:18px;
-padding:0 5px;
-background:#ff1744;
-border-radius:10px;
-color:#fff;
-font-size:10px;
-font-weight:800;
-display:flex;
-align-items:center;
-justify-content:center;
-border:2px solid #05070b;
-font-family:'JetBrains Mono',monospace;
-letter-spacing:-.3px;
-animation:badgePulse 2.5s ease-in-out infinite;
-}
-@keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.nav-badge{position:absolute;top:-4px;right:calc(50% - 18px);min-width:18px;height:18px;padding:0 5px;background:#ff1744;border-radius:10px;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #05070b;font-family:'JetBrains Mono',monospace;letter-spacing:-.3px}
 .nav-badge.hidden{display:none}
-/* ===== Signals section: activation-code + received-signals sub-pages ===== */
 .signals-subnav{display:flex;gap:6px;margin-bottom:14px;background:rgba(11,15,24,.9);padding:4px;border-radius:8px;border:1px solid rgba(255,255,255,.04)}
 .signals-subnav-btn{flex:1;padding:9px 6px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,.4);font-family:'Montserrat';font-size:11px;font-weight:700;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:6px;position:relative}
 .signals-subnav-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
@@ -750,6 +482,65 @@ animation:badgePulse 2.5s ease-in-out infinite;
 .rs-badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;font-family:'JetBrains Mono',monospace}
 .rs-badge.up{background:rgba(40,200,64,.12);color:#28c840}
 .rs-badge.down{background:rgba(255,77,109,.12);color:#ff4d6d}
+.payment-page{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(5,7,11,.98);backdrop-filter:blur(10px);z-index:6000;transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);overflow-y:auto;padding:20px;padding-bottom:env(safe-area-inset-bottom)}
+.payment-page.visible{transform:translateX(0)}
+.payment-page-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05);position:relative}
+.payment-back-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;transition:all .2s;flex-shrink:0}
+.payment-back-btn:active{background:rgba(255,255,255,.1)}
+.payment-back-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.payment-page-title{font-size:14px;font-weight:800;color:#fff;flex:1;padding-right:44px;line-height:1.25}
+.payment-close-btn{position:absolute;top:50%;right:0;transform:translateY(-50%);width:38px;height:38px;border-radius:10px;background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.3);display:flex;align-items:center;justify-content:center;color:#ff4d6d;cursor:pointer;transition:all .25s;flex-shrink:0}
+.payment-close-btn:active{background:rgba(255,77,109,.25);transform:translateY(-50%) scale(0.93)}
+.payment-close-btn:hover{background:rgba(255,77,109,.2);border-color:rgba(255,77,109,.5);box-shadow:0 0 15px rgba(255,77,109,.25)}
+.payment-close-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.payment-method-badge{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:14px}
+.payment-method-badge .method-icon{width:40px;height:40px;border-radius:10px;flex-shrink:0}
+.payment-method-badge .method-info{flex:1}
+.payment-method-badge .method-info h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.payment-method-badge .method-info p{font-size:10px;color:rgba(255,255,255,.5)}
+.payment-info-card{background:linear-gradient(135deg,rgba(0,210,255,.08),rgba(0,153,204,.03));border:1px solid rgba(0,210,255,.2);border-radius:14px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden}
+.payment-info-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(0,210,255,.15),transparent 70%);pointer-events:none}
+.payment-info-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.payment-info-label svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
+.payment-info-value{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#fff;background:rgba(0,0,0,.4);border:1px solid rgba(0,210,255,.2);border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;word-break:break-all}
+.payment-info-value .copy-id-btn{background:rgba(0,210,255,.15);border:1px solid rgba(0,210,255,.3);color:#00d2ff;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:4px;transition:all .2s}
+.payment-info-value .copy-id-btn:active{background:rgba(0,210,255,.25)}
+.payment-info-value .copy-id-btn svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2}
+.payment-timer-card{background:rgba(240,165,0,.05);border:1px solid rgba(240,165,0,.2);border-radius:12px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.payment-timer-icon{width:40px;height:40px;border-radius:10px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.25);display:flex;align-items:center;justify-content:center;color:#f0a500;flex-shrink:0}
+.payment-timer-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.payment-timer-info{flex:1}
+.payment-timer-info .timer-label{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:2px}
+.payment-timer-info .timer-value{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;color:#f0a500}
+.payment-timer-bar{height:3px;background:rgba(240,165,0,.15);border-radius:3px;overflow:hidden;margin-top:6px}
+.payment-timer-fill{height:100%;background:linear-gradient(90deg,#f0a500,#ffc040);border-radius:3px;transition:width 1s linear}
+.payment-amount-input{margin-bottom:14px}
+.payment-amount-input label{display:block;font-size:10px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.payment-amount-input input{width:100%;padding:12px 14px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#fff;font-family:'Montserrat';font-size:14px;font-weight:700;outline:none;transition:all .3s}
+.payment-amount-input input:focus{border-color:#00d2ff;box-shadow:0 0 0 3px rgba(0,210,255,.1)}
+.payment-withdraw-address{margin-bottom:14px}
+.payment-withdraw-address label{display:block;font-size:10px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.payment-withdraw-address input{width:100%;padding:12px 14px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#fff;font-family:'Montserrat';font-size:12px;outline:none;transition:all .3s}
+.payment-withdraw-address input:focus{border-color:#00d2ff;box-shadow:0 0 0 3px rgba(0,210,255,.1)}
+.payment-withdraw-address .address-hint{font-size:10px;color:rgba(255,255,255,.4);margin-top:6px;display:flex;align-items:center;gap:4px}
+.payment-withdraw-address .address-hint svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2}
+.payment-fee-note{font-size:10px;color:rgba(255,255,255,.4);margin-top:6px;display:flex;align-items:center;gap:4px}
+.payment-fee-note svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2}
+.payment-instructions{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:14px;margin-bottom:14px}
+.payment-instructions h5{font-size:11px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.payment-instructions h5::before{content:'';width:2px;height:10px;background:#00d2ff;border-radius:2px}
+.payment-instructions ol{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.payment-instructions ol li{font-size:11px;color:rgba(255,255,255,.6);display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.payment-instructions ol li span{background:rgba(0,210,255,.15);color:#00d2ff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;border:1px solid rgba(0,210,255,.2);margin-top:1px}
+.payment-support-note{background:rgba(240,165,0,.05);border:1px solid rgba(240,165,0,.2);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.payment-support-note-icon{width:28px;height:28px;border-radius:8px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.25);display:flex;align-items:center;justify-content:center;color:#f0a500;flex-shrink:0}
+.payment-support-note-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+.payment-support-note-text{flex:1;font-size:10px;color:rgba(255,255,255,.6);line-height:1.5}
+.payment-support-note-text strong{color:#f0a500}
+.payment-support-note-text a{color:#00d2ff;text-decoration:none;font-weight:700}
+.payment-confirm-btn{width:100%;padding:14px;border-radius:10px;font-family:'Montserrat';font-size:13px;font-weight:800;cursor:pointer;transition:all .25s;border:none;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#00d2ff,#0099cc);color:#000;box-shadow:0 8px 20px rgba(0,210,255,.25)}
+.payment-confirm-btn:active{transform:scale(0.97)}
+.payment-confirm-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
 @media(max-width:900px){
 .pricing-grid{grid-template-columns:1fr 1fr;max-width:500px;margin:0 auto}
 .footer-grid{grid-template-columns:1fr 1fr}
@@ -783,18 +574,22 @@ animation:badgePulse 2.5s ease-in-out infinite;
 .missions-locked-title{font-size:20px}
 .method-icon{width:38px;height:38px}
 .nav-badge{ top:-5px; right:calc(50% - 18px); min-width:17px; height:17px; font-size:9px; padding:0 4px; }
-.qx-notifications{top:10px;left:10px;right:10px;max-width:100%}
-.qx-toast{padding:12px 14px;gap:10px}
-.qx-toast-icon{width:32px;height:32px;border-radius:8px}
-.qx-toast-icon svg{width:16px;height:16px}
-.qx-toast-title{font-size:12px}
-.qx-toast-msg{font-size:11px}
-.qx-alert-card{padding:24px 20px 20px}
-.qx-alert-icon{width:64px;height:64px}
-.qx-alert-icon svg{width:30px;height:30px}
-.qx-alert-title{font-size:16px}
-.qx-alert-message{font-size:12px;margin-bottom:16px}
-.qx-alert-stat-value{font-size:14px}
+.payment-page{padding:16px}
+.payment-info-value{font-size:12px;padding:8px 10px}
+.payment-timer-info .timer-value{font-size:14px}
+.payment-page-title{font-size:13px;padding-right:44px}
+.payment-close-btn{width:36px;height:36px}
+.payment-close-btn svg{width:16px;height:16px}
+.ts-check-wrap{width:88px;height:88px;margin-bottom:18px}
+.ts-check-circle svg{width:42px;height:42px}
+.ts-title{font-size:18px}
+.ts-message{font-size:12px}
+.ts-detail-row{font-size:10.5px}
+.ts-time-note{padding:10px}
+.ts-time-text{font-size:10px}
+.notif-sheet{max-width:100%}
+.notif-header{padding:14px 14px 12px}
+.notif-list{padding:8px 10px}
 }
 @media (min-width:901px){
 .bottom-nav{top:0;left:0;right:auto;bottom:0;width:84px;height:100%;flex-direction:column;justify-content:flex-start;align-items:center;gap:8px;padding:24px 0;border-top:none;border-right:1px solid rgba(0,210,255,.1)}
@@ -806,9 +601,7 @@ animation:badgePulse 2.5s ease-in-out infinite;
 </style>
 </head>
 <body>
-<!-- Advanced Notification Container -->
-<div class="qx-notifications" id="qxNotifications"></div>
-<!-- Center Alert Card Container -->
+<!-- Center Alert Card -->
 <div class="qx-alert-overlay" id="qxAlertOverlay">
 <div class="qx-alert-card" id="qxAlertCard">
 <div class="qx-alert-icon" id="qxAlertIcon"></div>
@@ -818,6 +611,89 @@ animation:badgePulse 2.5s ease-in-out infinite;
 <div class="qx-alert-actions" id="qxAlertActions"></div>
 </div>
 </div>
+<!-- Transaction Success Page (Deposit & Withdraw) -->
+<div class="tx-success-overlay" id="txSuccessOverlay">
+<div class="tx-success-card">
+<div class="ts-check-wrap" onclick="closeTxSuccess()" style="cursor:pointer">
+<div class="ts-check-ring"></div>
+<div class="ts-check-circle">
+<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+</div>
+</div>
+<div class="ts-title" id="tsTitle">Transaction Successful</div>
+<div class="ts-message" id="tsMessage">Your request has been <strong>successfully submitted</strong> and is now being processed.</div>
+<div class="ts-details">
+<div class="ts-detail-row">
+<span class="ts-label">
+<svg viewBox="0 0 24 24"><use href="#icon-arrow-up"/></svg>
+<span id="tsTypeLabel">Amount</span>
+</span>
+<span class="ts-value amount" id="tsAmount">$0.00</span>
+</div>
+<div class="ts-detail-row">
+<span class="ts-label">
+<svg viewBox="0 0 24 24"><use href="#icon-wallet"/></svg>
+Method
+</span>
+<span class="ts-value" id="tsMethod">—</span>
+</div>
+<div class="ts-detail-row">
+<span class="ts-label">
+<svg viewBox="0 0 24 24"><use href="#icon-clock"/></svg>
+Request ID
+</span>
+<span class="ts-value" id="tsRequestId">#000000</span>
+</div>
+</div>
+<div class="ts-time-note" id="tsTimeNote">
+<div class="ts-time-icon">
+<svg viewBox="0 0 24 24"><use href="#icon-clock"/></svg>
+</div>
+<div class="ts-time-text" id="tsTimeText">
+Funds will usually arrive within <strong>48 hours</strong>. You will receive a confirmation notification once completed.
+</div>
+</div>
+<button class="ts-btn" onclick="closeTxSuccess()">
+<svg viewBox="0 0 24 24"><use href="#icon-check"/></svg>
+Done
+</button>
+</div>
+</div>
+<!-- Notifications Page -->
+<div class="notif-overlay" id="notifOverlay" onclick="closeNotificationsPage()"></div>
+<div class="notif-sheet" id="notifSheet">
+<div class="notif-header">
+<div class="notif-header-icon">
+<svg viewBox="0 0 24 24"><use href="#icon-bell"/></svg>
+</div>
+<div class="notif-header-info">
+<div class="notif-header-title">Notifications</div>
+<div class="notif-header-count"><strong id="notifUnreadCount">0</strong> unread notifications</div>
+</div>
+<button class="notif-close-btn" onclick="closeNotificationsPage()" aria-label="Close">
+<svg viewBox="0 0 24 24"><use href="#icon-close"/></svg>
+</button>
+</div>
+<div class="notif-actions-bar">
+<button class="notif-action-btn" onclick="markAllRead()">
+<svg viewBox="0 0 24 24"><use href="#icon-check"/></svg>
+Mark all read
+</button>
+<button class="notif-action-btn" onclick="clearAllNotifs()">
+<svg viewBox="0 0 24 24"><use href="#icon-close"/></svg>
+Clear all
+</button>
+</div>
+<div class="notif-list" id="notifList">
+<div class="notif-empty" id="notifEmpty">
+<div class="notif-empty-icon">
+<svg viewBox="0 0 24 24"><use href="#icon-bell"/></svg>
+</div>
+<h4>No notifications yet</h4>
+<p>When something important happens, you'll see it here.</p>
+</div>
+</div>
+</div>
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
 <defs>
 <symbol id="icon-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
@@ -825,7 +701,7 @@ animation:badgePulse 2.5s ease-in-out infinite;
 <symbol id="icon-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
 <symbol id="icon-profile" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
 <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
-<symbol id="icon-support" viewBox="0 0 24 24"><path d="M4 13v-1.5C4 6.5 7.6 2.5 12 2.5s8 4 8 9V13"/><path d="M4 13.5c0 .8.7 1.5 1.5 1.5h1c.8 0 1.5-.7 1.5-1.5v-2c0-.8-.7-1.5-1.5-1.5h-1c-.8 0-1.5.7-1.5 1.5v2z"/><path d="M20 13.5c0 .8-.7 1.5-1.5 1.5h-1c-.8 0-1.5-.7-1.5-1.5v-2c0-.8.7-1.5 1.5-1.5h1c.8 0 1.5.7 1.5 1.5v2z"/><path d="M18 15v1a6 6 0 0 1-6 6"/></symbol>
+<symbol id="icon-support" viewBox="0 0 24 24"><path d="M4 13v-1.5C4 6.5 7.6 2.5 12 2.5s8 4 8 9V13"/><path d="M4 13.5c0 .8.7 1.5 1.5 1.5h1c.8 0 1.5-.7 1.5-1.5v-2c0-.8-.7-1.5-1.5-1.5h-1c-.8 0-1.5.7-1.5 1.5v2z"/><path d="M20 13.5c0 .8-.7 1.5-1.5 1.5h-1c.8 0-1.5-.7-1.5-1.5v-2c0-.8.7-1.5 1.5-1.5h1c.8 0 1.5.7 1.5 1.5v2z"/><path d="M18 15v1a6 6 0 0 1-6 6"/></symbol>
 <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
 <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
 <symbol id="icon-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
@@ -842,6 +718,7 @@ animation:badgePulse 2.5s ease-in-out infinite;
 <symbol id="icon-wallet" viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="icon-arrow-up" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></symbol>
 <symbol id="icon-arrow-down" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></symbol>
+<symbol id="icon-arrow-left" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
 <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
 <symbol id="icon-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
 <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
@@ -860,6 +737,7 @@ animation:badgePulse 2.5s ease-in-out infinite;
 <symbol id="icon-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
 <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
 <symbol id="icon-close" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+<symbol id="icon-chevron-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
 </defs>
 </svg>
 <div id="logo-stage">
@@ -1019,7 +897,7 @@ animation:badgePulse 2.5s ease-in-out infinite;
 </div>
 <div class="pricing-card featured">
 <div class="plan-name">Monthly Pro</div>
-<div class="plan-price">5$<span>/month</span></div>
+<div class="plan-price">6$<span>/month</span></div>
 <p class="plan-desc">For professional active traders</p>
 <ul class="plan-features">
 <li>120 points monthly</li>
@@ -1059,7 +937,7 @@ animation:badgePulse 2.5s ease-in-out infinite;
 <rect class="av-bar" x="117" y="60" width="18" height="100" rx="2" fill="#000" stroke="url(#cyanFoot)" stroke-width="2"/>
 </g>
 <path class="av-hexagon-border" d="M100 15 L160 50 L160 120 L100 155 L40 120 L40 50 Z" fill="none" stroke="url(#cyanFoot)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-<path class="av-hexagon" d="M100 15 L160 50 L160 120 L100 155 L40 120 L40 50 Z" fill="none" stroke="url(#blueFoot)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="av-hexagon" d="M100 15 L160 50 L160 120 L100 155 L40 120 L40 50 Z" fill="none" stroke="url(#blueFoot)" stroke-width="3" stroke-linecap="round" stroke-linejoin:round"/>
 <path class="av-arrowPathRef" d="M35 125 L75 90 L100 105 L165 45" fill="none" stroke="none"/>
 <path class="av-arrow-border" d="M35 125 L75 90 L100 105 L165 45" fill="none" stroke="url(#cyanFoot)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path class="av-arrow" d="M35 125 L75 90 L100 105 L165 45" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1177,9 +1055,9 @@ Continue with Telegram
 <div class="icon-btn-lg" onclick="toggleSupportModal(true)">
 <svg><use href="#icon-support"/></svg>
 </div>
-<div class="icon-btn-lg" onclick="goToAuthPage()">
+<div class="icon-btn-lg" onclick="openNotificationsPage()">
 <svg><use href="#icon-bell"/></svg>
-<span class="badge" id="notifBadge"></span>
+<span class="bell-badge hidden" id="bellBadge">0</span>
 </div>
 </div>
 </header>
@@ -1245,23 +1123,29 @@ Continue with Telegram
 <div class="tool-page">
 <div class="tool-details">
 <h4>Pricing & Plans</h4>
-<div class="pricing-mini-card">
-<div class="plan-name">Source Code</div>
-<div class="plan-price">$105</div>
-<p class="plan-desc">Full Source Code Access</p>
-<button class="btn btn-secondary" style="width:100%" onclick="notify('info','Source Code','Full source code purchase flow will open in a new window.')">Buy Source</button>
-</div>
-<div class="pricing-mini-card featured">
-<div class="plan-name">Monthly Subscription</div>
-<div class="plan-price">$5</div>
-<p class="plan-desc">Unlimited Access No Limits</p>
-<button class="btn btn-primary" style="width:100%" onclick="subscribeMonthly()">Subscribe Monthly</button>
+<div class="pricing-mini-card free">
+<div class="plan-name" style="color:#28c840">Free (New User Gift)</div>
+<div class="plan-price" style="color:#28c840">$0</div>
+<p class="plan-desc">Collect points via referral links + new user signup gift</p>
+<button class="btn btn-success" style="width:100%" onclick="switchSection('profile', document.getElementById('nav-profile'))">Start Earning Points</button>
 </div>
 <div class="pricing-mini-card">
 <div class="plan-name">Weekly Subscription</div>
 <div class="plan-price">$7</div>
-<p class="plan-desc">Unlimited Access No Limits</p>
-<button class="btn btn-secondary" style="width:100%" onclick="notify('info','Weekly Plan','Weekly subscription flow will open shortly.')">Subscribe Weekly</button>
+<p class="plan-desc">Unlimited Access — No Limits</p>
+<button class="btn btn-secondary" style="width:100%" onclick="openPaymentPage('deposit','binance')">Subscribe Weekly</button>
+</div>
+<div class="pricing-mini-card featured">
+<div class="plan-name">Monthly Subscription</div>
+<div class="plan-price">$6</div>
+<p class="plan-desc">Unlimited Access — No Limits</p>
+<button class="btn btn-primary" style="width:100%" onclick="subscribeMonthly()">Subscribe Monthly</button>
+</div>
+<div class="pricing-mini-card">
+<div class="plan-name">Source Code</div>
+<div class="plan-price">$105</div>
+<p class="plan-desc">Full Source Code Access</p>
+<button class="btn btn-secondary" style="width:100%" onclick="openPaymentPage('deposit','binance')">Buy Source</button>
 </div>
 </div>
 </div>
@@ -1312,23 +1196,29 @@ Continue with Telegram
 <div class="tool-page">
 <div class="tool-details">
 <h4>Pricing & Plans</h4>
-<div class="pricing-mini-card">
-<div class="plan-name">Source Code</div>
-<div class="plan-price">$55</div>
-<p class="plan-desc">Full Source Code Access</p>
-<button class="btn btn-secondary" style="width:100%" onclick="notify('info','Source Code','MT4 Sync source code purchase flow initiated.')">Buy Source</button>
-</div>
-<div class="pricing-mini-card featured">
-<div class="plan-name">Monthly Subscription</div>
-<div class="plan-price">$5</div>
-<p class="plan-desc">Unlimited Access No Limits</p>
-<button class="btn btn-primary" style="width:100%" onclick="subscribeMonthly()">Subscribe Monthly</button>
+<div class="pricing-mini-card free">
+<div class="plan-name" style="color:#28c840">Free (New User Gift)</div>
+<div class="plan-price" style="color:#28c840">$0</div>
+<p class="plan-desc">Collect points via referral links + new user signup gift</p>
+<button class="btn btn-success" style="width:100%" onclick="switchSection('profile', document.getElementById('nav-profile'))">Start Earning Points</button>
 </div>
 <div class="pricing-mini-card">
 <div class="plan-name">Weekly Subscription</div>
 <div class="plan-price">$2</div>
-<p class="plan-desc">Unlimited Access No Limits</p>
-<button class="btn btn-secondary" style="width:100%" onclick="notify('info','Weekly Plan','Weekly subscription flow will open shortly.')">Subscribe Weekly</button>
+<p class="plan-desc">Unlimited Access — No Limits</p>
+<button class="btn btn-secondary" style="width:100%" onclick="openPaymentPage('deposit','binance')">Subscribe Weekly</button>
+</div>
+<div class="pricing-mini-card featured">
+<div class="plan-name">Monthly Subscription</div>
+<div class="plan-price">$2</div>
+<p class="plan-desc">Unlimited Access — No Limits</p>
+<button class="btn btn-primary" style="width:100%" onclick="subscribeMonthly()">Subscribe Monthly</button>
+</div>
+<div class="pricing-mini-card">
+<div class="plan-name">Source Code</div>
+<div class="plan-price">$55</div>
+<p class="plan-desc">Full Source Code Access</p>
+<button class="btn btn-secondary" style="width:100%" onclick="openPaymentPage('deposit','binance')">Buy Source</button>
 </div>
 </div>
 </div>
@@ -1501,7 +1391,7 @@ Level 2 - Pro
 </div>
 </div>
 <div class="card">
-<h3 style="font-size:14px;font-weight:700;color:#fff;margin-bottom:10px">Monthly Access - $5.00</h3>
+<h3 style="font-size:14px;font-weight:700;color:#fff;margin-bottom:10px">Monthly Access - $6.00</h3>
 <ul style="list-style:none;margin-bottom:14px">
 <li style="padding:4px 0;font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" style="width:12px;height:12px;color:#00d2ff;fill:none;stroke:currentColor;stroke-width:1.8"><use href="#icon-check"/></svg>120 Points monthly</li>
 <li style="padding:4px 0;font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" style="width:12px;height:12px;color:#00d2ff;fill:none;stroke:currentColor;stroke-width:1.8"><use href="#icon-check"/></svg>All ready lists FREE</li>
@@ -1529,7 +1419,7 @@ Level 2 - Pro
 <div class="nav-item" onclick="switchSection('missions',this)" id="nav-missions">
 <svg class="nav-icon"><use href="#icon-trophy"/></svg>
 <span class="nav-label">Missions</span>
-<span class="nav-badge" id="badge-missions">4</span>
+<span class="nav-badge hidden" id="badge-missions"></span>
 </div>
 <div class="nav-item" onclick="switchSection('profile',this)" id="nav-profile">
 <svg class="nav-icon"><use href="#icon-profile"/></svg>
@@ -1566,7 +1456,7 @@ Wallet
 <button class="wallet-tab" data-tab="history" onclick="switchWalletTab('history',this)">History</button>
 </div>
 <div class="wallet-panel active" id="wallet-deposit">
-<div class="method-card selected" onclick="selectMethod(this)">
+<div class="method-card" onclick="openPaymentPage('deposit','binance')">
 <div class="method-head">
 <div class="method-icon binance">
 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/binance.svg" alt="Binance">
@@ -1576,9 +1466,10 @@ Wallet
 <div class="method-desc">Instant deposit via Binance Pay</div>
 </div>
 <div class="method-fee">0% Fee</div>
+<div class="method-arrow"><svg><use href="#icon-chevron-right"/></svg></div>
 </div>
 </div>
-<div class="method-card" onclick="selectMethod(this)">
+<div class="method-card" onclick="openPaymentPage('deposit','usdt')">
 <div class="method-head">
 <div class="method-icon usdt"><svg><use href="#icon-usdt"/></svg></div>
 <div>
@@ -1586,18 +1477,12 @@ Wallet
 <div class="method-desc">Tether on TRON network</div>
 </div>
 <div class="method-fee">1% Fee</div>
+<div class="method-arrow"><svg><use href="#icon-chevron-right"/></svg></div>
 </div>
 </div>
-<div class="wallet-form-group">
-<label class="wallet-form-label">Amount (USD)</label>
-<input type="number" class="wallet-form-input" id="depositAmount" placeholder="Enter amount" min="1" step="0.01">
-</div>
-<button class="btn btn-primary" style="width:100%" onclick="processDeposit()">
-<svg><use href="#icon-arrow-down"/></svg> Confirm Deposit
-</button>
 </div>
 <div class="wallet-panel" id="wallet-withdraw">
-<div class="method-card selected" onclick="selectMethod(this)">
+<div class="method-card" onclick="openPaymentPage('withdraw','binance')">
 <div class="method-head">
 <div class="method-icon binance">
 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/binance.svg" alt="Binance">
@@ -1607,9 +1492,10 @@ Wallet
 <div class="method-desc">Fast withdrawal to Binance</div>
 </div>
 <div class="method-fee">0% Fee</div>
+<div class="method-arrow"><svg><use href="#icon-chevron-right"/></svg></div>
 </div>
 </div>
-<div class="method-card" onclick="selectMethod(this)">
+<div class="method-card" onclick="openPaymentPage('withdraw','usdt')">
 <div class="method-head">
 <div class="method-icon usdt"><svg><use href="#icon-usdt"/></svg></div>
 <div>
@@ -1617,19 +1503,9 @@ Wallet
 <div class="method-desc">Withdraw to TRC20 wallet</div>
 </div>
 <div class="method-fee">1% Fee</div>
+<div class="method-arrow"><svg><use href="#icon-chevron-right"/></svg></div>
 </div>
 </div>
-<div class="wallet-form-group">
-<label class="wallet-form-label">Wallet Address / Pay ID</label>
-<input type="text" class="wallet-form-input" placeholder="Enter your wallet address">
-</div>
-<div class="wallet-form-group">
-<label class="wallet-form-label">Amount (USD)</label>
-<input type="number" class="wallet-form-input" id="withdrawAmount" placeholder="Min. $5.00" min="5" step="0.01">
-</div>
-<button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#ff4d6d,#c9184a)" onclick="processWithdraw()">
-<svg><use href="#icon-arrow-up"/></svg> Request Withdrawal
-</button>
 </div>
 <div class="wallet-panel" id="wallet-history">
 <div class="tx-list">
@@ -1709,95 +1585,214 @@ Contact Support on Telegram
 <p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:12px">@QXTerminal_Support</p>
 </div>
 </div>
+<div class="payment-page" id="paymentPage">
+<div class="payment-page-header">
+<button class="payment-back-btn" onclick="closePaymentPage()" aria-label="Go Back">
+<svg><use href="#icon-arrow-left"/></svg>
+</button>
+<div class="payment-page-title" id="paymentPageTitle">Deposit via Binance</div>
+<button class="payment-close-btn" onclick="closePaymentPage()" aria-label="Close Payment Page">
+<svg viewBox="0 0 24 24"><use href="#icon-close"/></svg>
+</button>
+</div>
+<div class="payment-method-badge" id="paymentMethodBadge">
+<div class="method-icon binance" id="paymentMethodIcon">
+<img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/binance.svg" alt="Binance">
+</div>
+<div class="method-info">
+<h4 id="paymentMethodName">Binance Pay ID</h4>
+<p id="paymentMethodDesc">Instant deposit via Binance Pay</p>
+</div>
+</div>
+<div class="payment-info-card" id="paymentDepositIdCard">
+<div class="payment-info-label">
+<svg><use href="#icon-target"/></svg>
+<span id="paymentIdLabel">Deposit to this ID</span>
+</div>
+<div class="payment-info-value">
+<span id="paymentIdValue">QX-8472-BPAY-9201</span>
+<button class="copy-id-btn" onclick="copyPaymentId()">
+<svg><use href="#icon-copy"/></svg>
+Copy
+</button>
+</div>
+</div>
+<div class="payment-withdraw-address" id="paymentWithdrawAddressCard" style="display:none">
+<label>Withdrawal Address / Pay ID</label>
+<input type="text" id="withdrawAddressInput" placeholder="Enter your wallet address or Pay ID">
+<div class="address-hint">
+<svg><use href="#icon-info"/></svg>
+<span>Double-check the address before confirming</span>
+</div>
+</div>
+<div class="payment-timer-card">
+<div class="payment-timer-icon">
+<svg><use href="#icon-clock"/></svg>
+</div>
+<div class="payment-timer-info">
+<div class="timer-label">ID expires in</div>
+<div class="timer-value" id="paymentTimerValue">29:45</div>
+<div class="payment-timer-bar">
+<div class="payment-timer-fill" id="paymentTimerFill" style="width:100%"></div>
+</div>
+</div>
+</div>
+<div class="payment-amount-input">
+<label id="paymentAmountLabel">Amount (USD)</label>
+<input type="number" id="paymentAmountInput" placeholder="Enter amount" min="1" step="0.01">
+<div class="payment-fee-note" id="paymentFeeNote">
+<svg><use href="#icon-info"/></svg>
+<span>Fee: 0% — You receive the full amount</span>
+</div>
+</div>
+<div class="payment-instructions">
+<h5>Instructions</h5>
+<ol id="paymentInstructionsList">
+<li><span>1</span> Open your Binance app and go to Binance Pay.</li>
+<li><span>2</span> Copy the ID above and paste it as the recipient.</li>
+<li><span>3</span> Enter the exact amount you want to deposit.</li>
+<li><span>4</span> Confirm the transaction and wait for verification (1-5 min).</li>
+</ol>
+</div>
+<div class="payment-support-note">
+<div class="payment-support-note-icon">
+<svg><use href="#icon-alert"/></svg>
+</div>
+<div class="payment-support-note-text">
+If you don't want to use these methods, please <a href="#" onclick="closePaymentPage();setTimeout(()=>toggleSupportModal(true),300);return false;">contact support</a> to subscribe through alternative payment options.
+</div>
+</div>
+<button class="payment-confirm-btn" onclick="confirmPayment()">
+<svg><use href="#icon-check"/></svg>
+<span id="paymentConfirmBtnText">I've Sent the Payment</span>
+</button>
+</div>
 <script>
-/* ============================================================
-QX ADVANCED NOTIFICATION SYSTEM
-============================================================ */
-const QXNotify = {
-container: null,
-maxVisible: 4,
-queue: [],
-icons: {
+/* ===== Notifications System (only inside the notifications page) ===== */
+const notificationsData = [];
+let notifIdCounter = 0;
+
+function addNotification(type, title, message){
+const now = new Date();
+const timeStr = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false}) + ' • ' + now.toLocaleDateString('en-GB');
+const notif = {
+id: ++notifIdCounter,
+type: type,
+title: title,
+message: message,
+time: timeStr,
+read: false
+};
+notificationsData.unshift(notif);
+renderNotifications();
+updateBellBadge();
+if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback){
+const hf = window.Telegram.WebApp.HapticFeedback;
+if(type === 'error') hf.notificationOccurred('error');
+else if(type === 'warning') hf.notificationOccurred('warning');
+else if(type === 'success') hf.notificationOccurred('success');
+else hf.impactOccurred('light');
+}
+}
+
+function getNotifIcon(type){
+const icons = {
 success: '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
 error: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
 warning: '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
 info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
-},
-init(){
-this.container = document.getElementById('qxNotifications');
-},
-show(type, title, message, options = {}){
-if(!this.container) this.init();
-const duration = options.duration || 4500;
-const pulse = options.pulse || false;
-const existing = this.container.querySelectorAll('.qx-toast:not(.qx-leaving)');
-if(existing.length >= this.maxVisible){
-this.dismiss(existing[0]);
-}
-const toast = document.createElement('div');
-toast.className = `qx-toast ${type}${pulse ? ' pulse' : ''}`;
-toast.innerHTML = `
-<div class="qx-toast-icon">${this.icons[type] || this.icons.info}</div>
-<div class="qx-toast-body">
-<div class="qx-toast-title">${this.escapeHtml(title)}</div>
-<div class="qx-toast-msg">${message}</div>
-</div>
-<button class="qx-toast-close" aria-label="Close">
-<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-</button>
-<div class="qx-toast-progress"><div class="qx-toast-progress-bar" style="animation-duration:${duration}ms"></div></div>
-`;
-const closeBtn = toast.querySelector('.qx-toast-close');
-closeBtn.addEventListener('click', () => this.dismiss(toast));
-let timeoutId;
-const startTimer = () => {
-timeoutId = setTimeout(() => this.dismiss(toast), duration);
 };
-toast.addEventListener('mouseenter', () => {
-clearTimeout(timeoutId);
-const bar = toast.querySelector('.qx-toast-progress-bar');
-if(bar) bar.style.animationPlayState = 'paused';
-});
-toast.addEventListener('mouseleave', () => {
-const bar = toast.querySelector('.qx-toast-progress-bar');
-if(bar) bar.style.animationPlayState = 'running';
-startTimer();
-});
-this.container.appendChild(toast);
-startTimer();
-if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback){
-const hf = window.Telegram.WebApp.HapticFeedback;
-if(type === 'error') hf.notificationOccurred('error');
-else if(type === 'success') hf.notificationOccurred('success');
-else if(type === 'warning') hf.notificationOccurred('warning');
-else hf.impactOccurred('light');
+return icons[type] || icons.info;
 }
-return toast;
-},
-dismiss(toast){
-if(!toast || toast.classList.contains('qx-leaving')) return;
-toast.classList.add('qx-leaving');
-setTimeout(() => {
-if(toast.parentNode) toast.parentNode.removeChild(toast);
-}, 400);
-},
-clearAll(){
-if(!this.container) return;
-this.container.querySelectorAll('.qx-toast').forEach(t => this.dismiss(t));
-},
-escapeHtml(str){
+
+function renderNotifications(){
+const list = document.getElementById('notifList');
+const empty = document.getElementById('notifEmpty');
+const countEl = document.getElementById('notifUnreadCount');
+if(notificationsData.length === 0){
+list.innerHTML = '';
+list.appendChild(empty);
+empty.style.display = 'block';
+countEl.textContent = '0';
+return;
+}
+empty.style.display = 'none';
+const unreadCount = notificationsData.filter(n => !n.read).length;
+countEl.textContent = unreadCount;
+list.innerHTML = notificationsData.map(n => `
+<div class="notif-item ${n.type} ${n.read ? '' : 'unread'}" onclick="markNotifRead(${n.id})">
+<div class="notif-item-icon">${getNotifIcon(n.type)}</div>
+<div class="notif-item-body">
+<div class="notif-item-title">${escapeHtml(n.title)}</div>
+<div class="notif-item-msg">${n.message}</div>
+<div class="notif-item-time">${n.time}</div>
+</div>
+</div>
+`).join('');
+}
+
+function markNotifRead(id){
+const notif = notificationsData.find(n => n.id === id);
+if(notif && !notif.read){
+notif.read = true;
+renderNotifications();
+updateBellBadge();
+}
+}
+
+function markAllRead(){
+notificationsData.forEach(n => n.read = true);
+renderNotifications();
+updateBellBadge();
+if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback){
+window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+}
+}
+
+function clearAllNotifs(){
+notificationsData.length = 0;
+renderNotifications();
+updateBellBadge();
+if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback){
+window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+}
+}
+
+function updateBellBadge(){
+const badge = document.getElementById('bellBadge');
+const unreadCount = notificationsData.filter(n => !n.read).length;
+if(unreadCount > 0){
+badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+badge.classList.remove('hidden');
+} else {
+badge.classList.add('hidden');
+}
+}
+
+function openNotificationsPage(){
+// Mark all as read when opening
+notificationsData.forEach(n => n.read = true);
+renderNotifications();
+updateBellBadge();
+document.getElementById('notifOverlay').classList.add('visible');
+document.getElementById('notifSheet').classList.add('visible');
+if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback){
+window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+}
+}
+
+function closeNotificationsPage(){
+document.getElementById('notifOverlay').classList.remove('visible');
+document.getElementById('notifSheet').classList.remove('visible');
+}
+
+function escapeHtml(str){
 const div = document.createElement('div');
 div.textContent = str;
 return div.innerHTML;
 }
-};
-function notify(type, title, message, options){
-return QXNotify.show(type, title, message, options);
-}
 
-/* ============================================================
-CENTER ALERT CARD SYSTEM (for Insufficient Points etc.)
-============================================================ */
+/* ===== Center Alert Card ===== */
 const QXAlert = {
 icons: {
 success: '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
@@ -1813,39 +1808,29 @@ const titleEl = document.getElementById('qxAlertTitle');
 const msgEl = document.getElementById('qxAlertMessage');
 const statsEl = document.getElementById('qxAlertStats');
 const actionsEl = document.getElementById('qxAlertActions');
-
 card.className = 'qx-alert-card ' + type;
 iconEl.innerHTML = this.icons[type] || this.icons.info;
 titleEl.textContent = title;
 msgEl.innerHTML = message;
-
-// Stats (optional)
 statsEl.innerHTML = '';
 if(options.stats && Array.isArray(options.stats)){
 options.stats.forEach(s => {
 const stat = document.createElement('div');
 stat.className = 'qx-alert-stat';
-stat.innerHTML = `<div class="qx-alert-stat-value">${this.escapeHtml(s.value)}</div><div class="qx-alert-stat-label">${this.escapeHtml(s.label)}</div>`;
+stat.innerHTML = `<div class="qx-alert-stat-value">${escapeHtml(s.value)}</div><div class="qx-alert-stat-label">${escapeHtml(s.label)}</div>`;
 statsEl.appendChild(stat);
 });
 }
-
-// Actions (buttons)
 actionsEl.innerHTML = '';
 const actions = options.actions || [{label:'Got it', type:'secondary', onClick:() => this.hide()}];
 actions.forEach(a => {
 const btn = document.createElement('button');
 btn.className = 'qx-alert-btn ' + (a.type || 'secondary');
-btn.innerHTML = (a.icon ? a.icon : '') + '<span>' + this.escapeHtml(a.label) + '</span>';
-btn.addEventListener('click', () => {
-if(a.onClick) a.onClick();
-else this.hide();
-});
+btn.innerHTML = (a.icon ? a.icon : '') + '<span>' + escapeHtml(a.label) + '</span>';
+btn.addEventListener('click', () => { if(a.onClick) a.onClick(); else this.hide(); });
 actionsEl.appendChild(btn);
 });
-
 overlay.classList.add('visible');
-
 if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback){
 const hf = window.Telegram.WebApp.HapticFeedback;
 if(type === 'error') hf.notificationOccurred('error');
@@ -1854,37 +1839,67 @@ else if(type === 'success') hf.notificationOccurred('success');
 else hf.impactOccurred('medium');
 }
 },
-hide(){
-document.getElementById('qxAlertOverlay').classList.remove('visible');
-},
-escapeHtml(str){
-const div = document.createElement('div');
-div.textContent = str;
-return div.innerHTML;
-}
+hide(){ document.getElementById('qxAlertOverlay').classList.remove('visible'); },
+escapeHtml(str){ const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 };
+document.getElementById('qxAlertOverlay').addEventListener('click', function(e){ if(e.target === this) QXAlert.hide(); });
 
-// Click outside to close
-document.getElementById('qxAlertOverlay').addEventListener('click', function(e){
-if(e.target === this) QXAlert.hide();
+/* ===== Transaction Success Page ===== */
+function showTxSuccess(type, amount, method){
+const overlay = document.getElementById('txSuccessOverlay');
+const titleEl = document.getElementById('tsTitle');
+const msgEl = document.getElementById('tsMessage');
+const amountEl = document.getElementById('tsAmount');
+const methodEl = document.getElementById('tsMethod');
+const requestIdEl = document.getElementById('tsRequestId');
+const typeLabelEl = document.getElementById('tsTypeLabel');
+const timeNoteEl = document.getElementById('tsTimeNote');
+const timeTextEl = document.getElementById('tsTimeText');
+
+if(type === 'deposit'){
+titleEl.textContent = 'Deposit Submitted Successfully';
+msgEl.innerHTML = 'Your deposit request has been <strong>successfully submitted</strong> and is now being processed by our team.';
+typeLabelEl.textContent = 'Deposit Amount';
+timeNoteEl.style.display = 'flex';
+timeTextEl.innerHTML = 'Your deposit will be confirmed within <strong>1-5 minutes</strong> after verification. You will receive a notification once completed.';
+} else {
+titleEl.textContent = 'Withdrawal Request Sent';
+msgEl.innerHTML = 'Your withdrawal request has been <strong>successfully submitted</strong> and is now being processed by our team.';
+typeLabelEl.textContent = 'Withdrawal Amount';
+timeNoteEl.style.display = 'flex';
+timeTextEl.innerHTML = 'Funds will usually arrive within <strong>48 hours</strong>. You will receive a confirmation notification once completed.';
+}
+
+amountEl.textContent = '$' + amount.toFixed(2);
+methodEl.textContent = method;
+requestIdEl.textContent = '#' + Math.floor(100000 + Math.random() * 900000);
+
+overlay.classList.add('visible');
+// Re-trigger check animation
+const checkWrap = document.querySelector('.ts-check-wrap');
+const newCheckWrap = checkWrap.cloneNode(true);
+checkWrap.parentNode.replaceChild(newCheckWrap, checkWrap);
+
+if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback){
+window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+}
+}
+
+function closeTxSuccess(){
+document.getElementById('txSuccessOverlay').classList.remove('visible');
+}
+document.getElementById('txSuccessOverlay').addEventListener('click', function(e){
+if(e.target === this) closeTxSuccess();
 });
 
-/* ============================================================
-APP LOGIC
-============================================================ */
+/* ===== App Logic ===== */
 let userData={id:'',username:'',firstName:'',points:10,cashEarnings:0,freeDays:0,referrals:0,referralCode:'',history:[]};
 const tg=window.Telegram.WebApp;
 if(tg)tg.expand();
-const badgesState = { signals: 0, ready: 1, missions: 4, profile: 5 };
-function updateBadge(sectionName){
-const badge = document.getElementById('badge-' + sectionName);
-if(badge) badge.classList.add('hidden');
-}
+
 function goToAuthPage(){
 document.getElementById('main-app').classList.remove('visible');
-setTimeout(function(){
-document.getElementById('auth-page').classList.add('visible');
-},400);
+setTimeout(function(){ document.getElementById('auth-page').classList.add('visible'); },400);
 }
 var pathRef=document.getElementById('arrowPathRef'),pathLine=document.querySelector('.arrow'),pathBorder=document.querySelector('.arrow-border'),arrowHeadGroup=document.getElementById('arrowHeadGroup');
 function startArrow(){
@@ -2005,6 +2020,7 @@ document.getElementById('auth-page').classList.remove('visible');
 setTimeout(function(){
 document.getElementById('main-app').classList.add('visible');
 if(tg)tg.ready(); updateUI(); initCarousels();
+addNotification('success', 'Welcome Back', 'You are now logged in to <strong>QXTerminal</strong>. Happy trading!');
 },800);
 }
 function switchSection(sectionName,navEl){
@@ -2013,10 +2029,11 @@ document.getElementById('section-'+sectionName).classList.add('active');
 document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
 const activeNav=document.getElementById('nav-'+sectionName);
 if(activeNav) activeNav.classList.add('active');
-updateBadge(sectionName);
+// Hide badge when section is opened
+const badge = document.getElementById('badge-' + sectionName);
+if(badge) badge.classList.add('hidden');
 if(tg&&tg.HapticFeedback)tg.HapticFeedback.impactOccurred('light');
 }
-/* ===================== Signals: link-code + received-signals ===================== */
 const LINK_CODE_COST = 5;
 const LINK_CODE_TTL_SECONDS = 600;
 let linkCodeState = { code: null, expiresAt: null, timerInterval: null };
@@ -2030,13 +2047,13 @@ if(btn) btn.classList.add('active');
 if(pageName === 'received'){
 unreadSignalsCount = 0;
 updateSignalsSubBadge();
-updateBadge('signals');
+const navBadge = document.getElementById('badge-signals');
+navBadge.classList.add('hidden');
 }
 if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 function generateLinkCode(){
 if(userData.points < LINK_CODE_COST){
-// Show center alert card instead of toast
 QXAlert.show('warning', 'Insufficient Points',
 `You need <strong>${LINK_CODE_COST} points</strong> to generate a new link key. Your current balance is not enough.`,
 {
@@ -2060,6 +2077,7 @@ onClick: () => QXAlert.hide()
 ]
 }
 );
+addNotification('warning', 'Insufficient Points', `You need <strong>${LINK_CODE_COST} points</strong> to generate a new link key. Your current balance: <strong>${userData.points}</strong>.`);
 return;
 }
 userData.points -= LINK_CODE_COST;
@@ -2078,6 +2096,7 @@ genBtn.innerHTML = '<svg><use href="#icon-lightning"/></svg> Generate Another Ke
 if(linkCodeState.timerInterval) clearInterval(linkCodeState.timerInterval);
 linkCodeState.timerInterval = setInterval(updateLinkCodeTimer, 1000);
 updateLinkCodeTimer();
+addNotification('success', 'Link Key Generated', `Your new key <strong>${code}</strong> is now active. Enter it in your local tool to start receiving signals.`);
 if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 }
 function updateLinkCodeTimer(){
@@ -2094,7 +2113,7 @@ valueEl.classList.add('empty');
 document.getElementById('linkCodeTimer').style.display = 'none';
 document.getElementById('linkCodeTimerBar').style.display = 'none';
 document.getElementById('generateCodeBtn').innerHTML = '<svg><use href="#icon-lightning"/></svg> Generate New Key';
-notify('warning','Link Key Expired','Your previous link key has expired. Generate a new one to continue receiving signals.',{duration:4500});
+addNotification('warning', 'Link Key Expired', 'Your previous link key has expired. Generate a new one to continue receiving signals.');
 return;
 }
 const totalSec = Math.ceil(remainingMs/1000);
@@ -2136,50 +2155,47 @@ const activeSubPage = document.querySelector('.signals-subpage.active');
 const onReceivedTab = activeSubPage && activeSubPage.id === 'signals-subpage-received';
 const onSignalsSection = document.getElementById('section-signals').classList.contains('active');
 if(!(onReceivedTab && onSignalsSection)){
-badgesState.signals = unreadSignalsCount;
 const navBadge = document.getElementById('badge-signals');
 navBadge.textContent = unreadSignalsCount;
 navBadge.classList.remove('hidden');
 }
 const dirLabel = signal.direction === 'up' ? 'CALL ↑' : 'PUT ↓';
 const type = signal.direction === 'up' ? 'success' : 'warning';
-notify(type, `New Signal — ${dirLabel}`, `<strong>${signal.pair}</strong> at <strong>${signal.time}</strong>`, {duration:4000,pulse:true});
+addNotification(type, `New Signal — ${dirLabel}`, `<strong>${signal.pair}</strong> at <strong>${signal.time}</strong>`);
 if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 }
 function updateSignalsSubBadge(){
 const miniBadge = document.getElementById('signals-subnav-badge');
-if(unreadSignalsCount > 0){
-miniBadge.textContent = unreadSignalsCount;
-miniBadge.classList.remove('hidden');
-} else {
-miniBadge.classList.add('hidden');
+if(unreadSignalsCount > 0){ miniBadge.textContent = unreadSignalsCount; miniBadge.classList.remove('hidden'); }
+else { miniBadge.classList.add('hidden'); }
 }
-}
-/* =================================================================================== */
 function purchaseReadyList(price){
-notify('info','Payment Gateway',`Processing payment of <strong>$${price.toFixed(2)}</strong> for the ready list...`,{duration:3500});
+addNotification('info', 'Payment Gateway', `Processing payment of <strong>$${price.toFixed(2)}</strong> for the ready list...`);
+// Hide ready badge when opened
+const readyBadge = document.getElementById('badge-ready');
+if(readyBadge) readyBadge.classList.add('hidden');
 }
 function unlockWithReferrals(){
 if(userData.referrals>=2){
-notify('success','List Unlocked!','You have successfully unlocked this list using your referrals.',{duration:4000,pulse:true});
+addNotification('success', 'List Unlocked!', 'You have successfully unlocked this list using your referrals.');
 }else{
-notify('warning','Referrals Required',`You need <strong>2 active referrals</strong> to unlock this list. You currently have <strong>${userData.referrals}</strong>.`,{duration:4500});
+addNotification('warning', 'Referrals Required', `You need <strong>2 active referrals</strong> to unlock this list. You currently have <strong>${userData.referrals}</strong>.`);
 }
 }
 function purchaseSourceCode(){
-notify('info','Source Code Download','Preparing your source code package for download...',{duration:3500});
+addNotification('info', 'Source Code Download', 'Preparing your source code package for download...');
 }
 function copyRefLink(){
 const link=document.getElementById('refLink').value;
 navigator.clipboard.writeText(link).then(()=>{
-notify('success','Link Copied','Your referral link has been copied to clipboard. Share it and start earning!',{duration:3500});
+addNotification('success', 'Link Copied', 'Your referral link has been copied to clipboard. Share it and start earning!');
 }).catch(()=>{
-notify('error','Copy Failed','Unable to copy link. Please try again manually.',{duration:3500});
+addNotification('error', 'Copy Failed', 'Unable to copy link. Please try again manually.');
 });
 if(tg&&tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success');
 }
 function subscribeMonthly(){
-notify('success','Subscription Activated','Monthly Pro plan activated! You received <strong>120 bonus points</strong>.',{duration:4500,pulse:true});
+addNotification('success', 'Subscription Activated', 'Monthly Pro plan activated! You received <strong>120 bonus points</strong>.');
 userData.points+=120;
 updateUI();
 }
@@ -2196,15 +2212,10 @@ if(costEl) costEl.textContent = LINK_CODE_COST;
 function toggleLike(btn) {
 const countSpan = btn.querySelector('.like-count');
 let count = parseInt(countSpan.textContent);
-if (btn.classList.contains('active')) {
-btn.classList.remove('active');
-count -= 1;
-countSpan.textContent = count;
-} else {
-btn.classList.add('active');
-count += 1;
-countSpan.textContent = count;
-notify('success','Liked!','Your like has been recorded.',{duration:2000});
+if (btn.classList.contains('active')) { btn.classList.remove('active'); count -= 1; countSpan.textContent = count; }
+else {
+btn.classList.add('active'); count += 1; countSpan.textContent = count;
+addNotification('success', 'Liked!', 'Your like has been recorded.');
 if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 }
@@ -2246,47 +2257,204 @@ document.querySelectorAll('.wallet-tab').forEach(t => t.classList.remove('active
 btn.classList.add('active');
 } else {
 const tabs = document.querySelectorAll('.wallet-tab');
-tabs.forEach(t => {
-t.classList.remove('active');
-if(t.dataset.tab === tabName) t.classList.add('active');
+tabs.forEach(t => { t.classList.remove('active'); if(t.dataset.tab === tabName) t.classList.add('active'); });
+}
+}
+const PAYMENT_METHODS = {
+binance: {
+name: 'Binance Pay ID',
+desc: 'Instant deposit via Binance Pay',
+iconHtml: '<img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/binance.svg" alt="Binance">',
+iconClass: 'binance',
+fee: 0,
+feeText: '0% — You receive the full amount',
+generateId: () => 'QX-' + Math.floor(1000+Math.random()*9000) + '-BPAY-' + Math.floor(1000+Math.random()*9000),
+depositInstructions: [
+'Open your Binance app and go to Binance Pay.',
+'Copy the ID above and paste it as the recipient.',
+'Enter the exact amount you want to deposit.',
+'Confirm the transaction and wait for verification (1-5 min).'
+],
+withdrawInstructions: [
+'Enter your Binance Pay ID in the field above.',
+'Enter the exact amount you want to withdraw.',
+'Confirm the request and wait for processing (1-24 hours).'
+]
+},
+usdt: {
+name: 'USDT – TRC20',
+desc: 'Tether on TRON network',
+iconHtml: '<svg><use href="#icon-usdt"/></svg>',
+iconClass: 'usdt',
+fee: 1,
+feeText: '1% network fee applied',
+generateId: () => 'T' + Array.from({length:33},()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random()*62)]).join(''),
+depositInstructions: [
+'Open your USDT wallet (TRC20 network only).',
+'Copy the wallet address above.',
+'Send the exact amount in USDT via TRC20 network.',
+'Wait for 20 confirmations (usually 1-3 minutes).'
+],
+withdrawInstructions: [
+'Enter your USDT TRC20 wallet address in the field above.',
+'Enter the exact amount you want to withdraw.',
+'Confirm the request and wait for processing (1-24 hours).',
+'Check your wallet after the withdrawal is completed.'
+]
+}
+};
+let paymentState = {
+type: 'deposit',
+method: 'binance',
+id: '',
+expiresAt: 0,
+duration: 1800,
+timerInterval: null
+};
+function openPaymentPage(type, methodKey){
+const method = PAYMENT_METHODS[methodKey];
+if(!method) return;
+paymentState.type = type;
+paymentState.method = methodKey;
+paymentState.id = method.generateId();
+paymentState.duration = 1800;
+paymentState.expiresAt = Date.now() + paymentState.duration * 1000;
+const pageTitle = document.getElementById('paymentPageTitle');
+pageTitle.textContent = (type === 'deposit' ? 'Deposit' : 'Withdraw') + ' via ' + method.name;
+const methodIcon = document.getElementById('paymentMethodIcon');
+methodIcon.className = 'method-icon ' + method.iconClass;
+methodIcon.innerHTML = method.iconHtml;
+document.getElementById('paymentMethodName').textContent = method.name;
+document.getElementById('paymentMethodDesc').textContent = method.desc;
+const depositIdCard = document.getElementById('paymentDepositIdCard');
+const withdrawAddressCard = document.getElementById('paymentWithdrawAddressCard');
+if(type === 'deposit'){
+depositIdCard.style.display = 'block';
+withdrawAddressCard.style.display = 'none';
+document.getElementById('paymentIdValue').textContent = paymentState.id;
+document.getElementById('paymentIdLabel').textContent = 'Deposit to this ' + (methodKey === 'binance' ? 'ID' : 'address');
+} else {
+depositIdCard.style.display = 'none';
+withdrawAddressCard.style.display = 'block';
+document.getElementById('withdrawAddressInput').value = '';
+document.getElementById('withdrawAddressInput').placeholder = methodKey === 'binance' ? 'Enter your Binance Pay ID' : 'Enter your USDT TRC20 wallet address';
+}
+document.getElementById('paymentAmountLabel').textContent = 'Amount (USD)';
+document.getElementById('paymentAmountInput').value = '';
+document.getElementById('paymentAmountInput').placeholder = type === 'withdraw' ? 'Min. $5.00' : 'Enter amount';
+document.getElementById('paymentAmountInput').min = type === 'withdraw' ? 5 : 1;
+document.getElementById('paymentFeeNote').innerHTML = `<svg><use href="#icon-info"/></svg><span>Fee: ${method.feeText}</span>`;
+const instructionsList = document.getElementById('paymentInstructionsList');
+instructionsList.innerHTML = '';
+const instructions = type === 'deposit' ? method.depositInstructions : method.withdrawInstructions;
+instructions.forEach((inst, i) => {
+const li = document.createElement('li');
+li.innerHTML = `<span>${i+1}</span> ${inst}`;
+instructionsList.appendChild(li);
 });
+document.getElementById('paymentConfirmBtnText').textContent = type === 'deposit' ? "I've Sent the Payment" : 'Request Withdrawal';
+document.getElementById('paymentPage').classList.add('visible');
+if(paymentState.timerInterval) clearInterval(paymentState.timerInterval);
+paymentState.timerInterval = setInterval(updatePaymentTimer, 1000);
+updatePaymentTimer();
+if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 }
+function updatePaymentTimer(){
+const remainingMs = paymentState.expiresAt - Date.now();
+const timerValue = document.getElementById('paymentTimerValue');
+const fillEl = document.getElementById('paymentTimerFill');
+if(remainingMs <= 0){
+clearInterval(paymentState.timerInterval);
+timerValue.textContent = '00:00';
+timerValue.style.color = '#ff4d6d';
+fillEl.style.width = '0%';
+addNotification('warning', 'ID Expired', 'This payment ID has expired. Please go back and generate a new one.');
+return;
 }
-function selectMethod(card){
-const parent = card.parentElement;
-parent.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-card.classList.add('selected');
+const totalSec = Math.ceil(remainingMs/1000);
+const mm = Math.floor(totalSec/60).toString().padStart(2,'0');
+const ss = (totalSec%60).toString().padStart(2,'0');
+timerValue.textContent = mm+':'+ss;
+if(remainingMs < 300000){
+timerValue.style.color = '#ff4d6d';
+} else {
+timerValue.style.color = '#f0a500';
+}
+const pct = Math.max(0, (remainingMs / (paymentState.duration*1000)) * 100);
+fillEl.style.width = pct+'%';
+}
+function closePaymentPage(){
+document.getElementById('paymentPage').classList.remove('visible');
+if(paymentState.timerInterval){
+clearInterval(paymentState.timerInterval);
+paymentState.timerInterval = null;
+}
 if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
-function processDeposit(){
-const amountInput = document.getElementById('depositAmount');
-const amount = parseFloat(amountInput ? amountInput.value : 0);
+function copyPaymentId(){
+navigator.clipboard.writeText(paymentState.id).then(()=>{
+addNotification('success', 'ID Copied', 'Payment ID has been copied to your clipboard.');
+if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+}).catch(()=>{
+addNotification('error', 'Copy Failed', 'Unable to copy. Please copy manually.');
+});
+}
+function confirmPayment(){
+const amountInput = document.getElementById('paymentAmountInput');
+const amount = parseFloat(amountInput.value || 0);
+if(paymentState.type === 'deposit'){
 if(!amount || amount < 1){
-notify('warning','Invalid Amount','Please enter a valid deposit amount (minimum $1.00).',{duration:3500});
+addNotification('warning', 'Invalid Amount', 'Please enter a valid deposit amount (minimum $1.00).');
 return;
 }
-notify('success','Deposit Submitted',`Your deposit request of <strong>$${amount.toFixed(2)}</strong> has been submitted. You will receive payment instructions via Telegram.`,{duration:5000,pulse:true});
+const methodName = PAYMENT_METHODS[paymentState.method].name;
+closePaymentPage();
 closeWalletModal();
-}
-function processWithdraw(){
-if(userData.cashEarnings < 5){
-notify('error','Insufficient Balance',`Minimum withdrawal amount is <strong>$5.00</strong>. Your current balance: <strong>$${userData.cashEarnings.toFixed(2)}</strong>.`,{duration:5000,pulse:true});
+setTimeout(() => {
+showTxSuccess('deposit', amount, methodName);
+addNotification('success', 'Deposit Submitted', `Your deposit of <strong>$${amount.toFixed(2)}</strong> via <strong>${methodName}</strong> has been submitted. Confirmation within <strong>1-5 minutes</strong>.`);
+}, 400);
+} else {
+const addressInput = document.getElementById('withdrawAddressInput');
+const address = addressInput.value.trim();
+if(!address){
+addNotification('warning', 'Address Required', 'Please enter your withdrawal address or Pay ID.');
 return;
 }
-const amountInput = document.getElementById('withdrawAmount');
-const amount = parseFloat(amountInput ? amountInput.value : 0);
+if(userData.cashEarnings < 5){
+QXAlert.show('error', 'Insufficient Balance',
+`Minimum withdrawal amount is <strong>$5.00</strong>. Your current balance: <strong>$${userData.cashEarnings.toFixed(2)}</strong>.`,
+{
+stats: [
+{ value: '$' + userData.cashEarnings.toFixed(2), label: 'Balance' },
+{ value: '$5.00', label: 'Minimum' }
+],
+actions: [{label:'Close', type:'secondary', onClick:() => QXAlert.hide()}]
+}
+);
+addNotification('error', 'Insufficient Balance', `You need at least <strong>$5.00</strong> to withdraw. Current balance: <strong>$${userData.cashEarnings.toFixed(2)}</strong>.`);
+return;
+}
 if(!amount || amount < 5){
-notify('warning','Invalid Amount','Please enter a valid withdrawal amount (minimum $5.00).',{duration:3500});
+addNotification('warning', 'Invalid Amount', 'Please enter a valid withdrawal amount (minimum $5.00).');
 return;
 }
 if(amount > userData.cashEarnings){
-notify('error','Amount Exceeds Balance',`You cannot withdraw more than your available balance of <strong>$${userData.cashEarnings.toFixed(2)}</strong>.`,{duration:4500});
+addNotification('error', 'Amount Exceeds Balance', `You cannot withdraw more than your available balance of <strong>$${userData.cashEarnings.toFixed(2)}</strong>.`);
 return;
 }
-notify('success','Withdrawal Requested',`Your withdrawal of <strong>$${amount.toFixed(2)}</strong> is being processed. Processing time: 1-24 hours.`,{duration:5000,pulse:true});
+const methodName = PAYMENT_METHODS[paymentState.method].name;
+closePaymentPage();
 closeWalletModal();
+setTimeout(() => {
+showTxSuccess('withdraw', amount, methodName);
+addNotification('success', 'Withdrawal Request Sent', `Your withdrawal of <strong>$${amount.toFixed(2)}</strong> via <strong>${methodName}</strong> is being processed. Funds will usually arrive within <strong>48 hours</strong>.`);
+}, 400);
 }
-QXNotify.init();
+}
+// Initialize
+renderNotifications();
+updateBellBadge();
 </script>
 </body>
 </html>
